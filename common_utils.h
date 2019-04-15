@@ -8,7 +8,7 @@
 #include <cstring>
 
 static void print_err(const std::string &message) {
-    std::cerr << std::endl << "\033[31m" << message;
+    std::cerr << "\033[31m" << message;
     if (errno) {
         std::cerr << ": " << std::strerror(errno);
     }

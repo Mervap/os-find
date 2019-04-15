@@ -2,7 +2,24 @@
 // Created by dumpling on 15.04.19.
 //
 
+#include <algorithm>
 #include "File_filter.h"
+
+unsigned long long get_ull(std::string number) {
+
+    if (number[0] == '-') {
+        throw std::invalid_argument(number + " should be not negative");
+    }
+
+    size_t st = 0;
+    auto real_number = std::stoull(number, &st);
+
+    if (st != number.size()) {
+        throw std::invalid_argument(number + " is not a positive integer number");
+    }
+
+    return real_number;
+}
 
 bool File_filter::Inode_filter::check(const struct stat64 &st) {
     return st.st_ino == this->num;
@@ -17,10 +34,10 @@ bool File_filter::Size_filter::check(const struct stat64 &st) {
     if (this->extract_bound != -1) {
         return st.st_size == extract_bound;
     } else {
-        if (st.st_size <= lower_bound) {
+        if (upper_bound != -1 && st.st_size >= upper_bound) {
             return false;
         } else {
-            return st.st_size < upper_bound;
+            return st.st_size > lower_bound;
         }
     }
 }
@@ -29,11 +46,13 @@ bool File_filter::Links_filter::check(const struct stat64 &st) {
     return st.st_nlink == this->cnt;
 }
 
-bool File_filter::Executer::run(const std::vector<std::string> &args) {
+void File_filter::Executer::run(const std::vector<std::string> &args) {
+
     for (auto &e : args) {
-        file_path += e;
+        if (std::system((this->file_path + " " + e).c_str()) != 0) {
+            print_err("Cant execute programm");
+        }
     }
-    return (std::system(this->file_path.c_str()));
 }
 
 bool File_filter::init(int argc, char **argv) {
@@ -52,7 +71,7 @@ bool File_filter::init(int argc, char **argv) {
                 if (inode_filter == nullptr) {
                     inode_filter = new Inode_filter;
                 }
-                inode_filter->num = std::stoull(arg);
+                inode_filter->num = get_ull(arg);
             } catch (...) {
                 print_err(arg + " is not a positive integer number");
                 return false;
@@ -68,13 +87,13 @@ bool File_filter::init(int argc, char **argv) {
                     size_filter = new Size_filter;
                 }
 
-                std::string real_arg = arg.substr(1);
+                auto real_arg = get_ull(arg.substr(1));
                 if (arg[0] == '=') {
-                    size_filter->extract_bound = std::stoull(real_arg);
+                    size_filter->extract_bound = real_arg;
                 } else if (arg[0] == '+') {
-                    size_filter->lower_bound = std::stoull(real_arg);
+                    size_filter->lower_bound = real_arg;
                 } else if (arg[0] == '-') {
-                    size_filter->upper_bound = std::stoull(real_arg);
+                    size_filter->upper_bound = real_arg;
                 } else {
                     print_err(std::string({arg[0]}) + " is wrong size parameter");
                     return false;
@@ -89,7 +108,7 @@ bool File_filter::init(int argc, char **argv) {
                     links_filter = new Links_filter;
                 }
 
-                links_filter->cnt = std::stoull(arg);
+                links_filter->cnt = get_ull(arg);
             } catch (...) {
                 print_err(arg + " is not a positive integer number");
                 return false;
