@@ -59,7 +59,7 @@ bool File_filter::init(int argc, char **argv) {
         ++i;
 
         if (i == argc) {
-            print_err("There is no argument for " + key);
+            print_err("There is no argument for \'" + key + "\'");
             return false;
         }
         std::string arg = argv[i];
@@ -71,7 +71,7 @@ bool File_filter::init(int argc, char **argv) {
                 }
                 inode_filter->num = get_ull(arg);
             } catch (...) {
-                print_err(arg + " is not a positive integer number");
+                print_err("\'" + arg + "\' is not a positive integer number");
                 return false;
             }
         } else if (key == "-name") {
@@ -93,11 +93,11 @@ bool File_filter::init(int argc, char **argv) {
                 } else if (arg[0] == '-') {
                     size_filter->upper_bound = real_arg;
                 } else {
-                    print_err(std::string({arg[0]}) + " is wrong size parameter");
+                    print_err("\'" + std::string({arg[0]}) + "\' is wrong size parameter");
                     return false;
                 }
             } catch (...) {
-                print_err(arg.substr(1) + " is not a positive integer number");
+                print_err("\'" + arg.substr(1) + "\' is not a positive integer number");
                 return false;
             }
         } else if (key == "-nlinks") {
@@ -108,7 +108,7 @@ bool File_filter::init(int argc, char **argv) {
 
                 links_filter->cnt = get_ull(arg);
             } catch (...) {
-                print_err(arg + " is not a positive integer number");
+                print_err("\'" + arg + "\' is not a positive integer number");
                 return false;
             }
         } else if (key == "-exec") {
@@ -118,7 +118,7 @@ bool File_filter::init(int argc, char **argv) {
 
             executer->file_path = arg;
         } else {
-            print_err(key + " is not a valid argument key");
+            print_err("Unknown predicate \'" + key + "\'");
             return false;
         }
     }

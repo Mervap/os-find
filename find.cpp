@@ -114,6 +114,6 @@ int main(int argc, char **argv) {
     dir_processing(fd, root_dir, filter);
 
     if (close(fd) == -1) {
-        print_err("Failed close directory \'" + root_dir+ "\'");
+        print_err("Failed close directory \'" + root_dir + "\'");
     }
 }
