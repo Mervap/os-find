@@ -16,7 +16,6 @@ struct File_filter {
 
     void apply(const std::string &file_path, const struct stat64 &st);
 
-    void out();
 
     ~File_filter();
 
@@ -63,7 +62,7 @@ private:
     struct Executer {
         std::string file_path;
 
-        void run(const std::vector<std::string> &args);
+        void run(const std::string &args);
 
     };
 

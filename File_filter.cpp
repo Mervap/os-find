@@ -46,12 +46,10 @@ bool File_filter::Links_filter::check(const struct stat64 &st) {
     return st.st_nlink == this->cnt;
 }
 
-void File_filter::Executer::run(const std::vector<std::string> &args) {
+void File_filter::Executer::run(const std::string &arg) {
 
-    for (auto &e : args) {
-        if (std::system((this->file_path + " " + e).c_str()) != 0) {
-            print_err("Cant execute programm");
-        }
+    if (std::system((this->file_path + " " + arg).c_str()) != 0) {
+        print_err("Can't execute program");
     }
 }
 
@@ -157,16 +155,10 @@ void File_filter::apply(const std::string &file_path, const struct stat64 &st) {
     }
 
     if (result) {
-        this->results.push_back(file_path);
-    }
-}
-
-void File_filter::out() {
-    if (executer == nullptr) {
-        for (auto &e : results) {
-            std::cout << e << std::endl;
+        if (executer == nullptr) {
+            std::cout << file_path << std::endl;
+        } else {
+            executer->run(file_path);
         }
-    } else {
-        executer->run(results);
     }
 }

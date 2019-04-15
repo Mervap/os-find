@@ -116,5 +116,4 @@ int main(int argc, char **argv) {
     if (close(fd) == -1) {
         print_err("Failed close directory \'" + root_dir+ "\'");
     }
-    filter.out();
 }
